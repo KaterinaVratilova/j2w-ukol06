@@ -16,12 +16,12 @@ import java.util.Optional;
 @Controller
 public class VizitkaController {
 
-  private final VizitkaRepository repository; // field pro repository
+  private final VizitkaRepository vizitkaRepository; // field pro repository
 
   //konstruktor, který dostane repository jako vstupní paramentr a uloží si ho do fieldu,
   // aby bylo možné později repository v controlleru používat
-  public VizitkaController(VizitkaRepository repository) {
-    this.repository = repository;
+  public VizitkaController(VizitkaRepository repository, VizitkaRepository vizitkaRepository) {
+    this.vizitkaRepository = vizitkaRepository;
   }
 
   // tento kód zajistí, aby se prázdné stringy převedly na null
@@ -35,14 +35,14 @@ public class VizitkaController {
   @GetMapping("/")
   public Object seznam() {
     return new ModelAndView("seznam")
-      .addObject("vizitky", repository.findAll());
+      .addObject("vizitky", vizitkaRepository.findAll());
 
   }
 
   // bod 12 - reaguje na požadavky metodou GET, které budou mít v URL hned za lomítkem číslo
   @GetMapping("/{id:[0-9]+}") // v url za lomítkem bude číslo
-  public Object vizitka(@PathVariable int id) { // moje poznámka - v příkladu z lekce 8 se jedná o metodu detail
-    Optional<Vizitka> vizitka = repository.findById(id);
+  public Object vizitka(@PathVariable int id) { // v příkladu z lekce 8 se jedná o metodu detail
+    Optional<Vizitka> vizitka = vizitkaRepository.findById(id);
     if (vizitka.isEmpty()) { // ověřím, zda je přítomná hodnota
       return ResponseEntity.notFound().build(); //  pokud vizitka s daným id neexistuje, ukončím s kódem 404
     }
@@ -66,7 +66,7 @@ public class VizitkaController {
     if (bindingResult.hasErrors()) {
       return "formular";
     }
-        repository.save(vizitka); // přidáme entitu, kterou chceme uložit - bod 16
+        vizitkaRepository.save(vizitka); // přidáme entitu, kterou chceme uložit - bod 16
 
   return "redirect:/"; // po přidání vizitky se vrátím na hlavní stránku se seznamem vizitek
   }
